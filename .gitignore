@@ -1,0 +1,8 @@
+nuclei-templates/
+test/
+venv/
+.vscode/
+test-templates/
+__pycache__/
+dist/
+.DS_Store
