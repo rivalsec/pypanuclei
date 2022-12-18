@@ -211,7 +211,7 @@ def cli():
 
     templates = load_templates(args.t, args.et)
     
-    print (f"Templates loaded {len(templates)}", file=sys.stderr)
+    print (f"Templates loaded for scan: {len(templates)}", file=sys.stderr)
 
     for res in check_responses(args.u, templates):
         if args.json:
