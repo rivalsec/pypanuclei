@@ -207,7 +207,7 @@ def cli():
     a.add_argument("-u", "-target", type=str, help="directory to exclude (list)", required=True)
     a.add_argument("-t", "-templates", type=str, default=[], action='append', help="template directory to run (list)", required=True)
     a.add_argument("-et", "-exclude-templates", type=str, default=[], action='append', help="template or directory to exclude (list)")
-    a.add_argument('-json', action='store_true', help='passive nuclei checks')
+    a.add_argument('-json', action='store_true', help='json output')
     args = a.parse_args()
 
     templates = load_templates(args.t, args.et)
