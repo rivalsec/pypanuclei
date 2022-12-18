@@ -5,6 +5,9 @@ from http.client import HTTPResponse
 from io import BytesIO
 import re
 import argparse
+from datetime import datetime, timezone
+import json
+import sys
 
 
 def load_templates(paths, excludes):
@@ -164,11 +167,6 @@ def template_match(temp, response):
 
 
 def check_responses(path, templates):
-    """{"template-id":"waf-detect","info":{"name":"WAF Detection","author":["dwisiswant0","lu4nx"],
-    "tags":["waf","tech","misc"],"description":"A web application firewall was detected.","reference":
-    ["https://github.com/ekultek/whatwaf"],"severity":"info","classification":
-    {"cve-id":null,"cwe-id":["cwe-200"]}},"matcher-name":"safedog","type":"http","path":"test/mcs.mail.ru.txt",
-    "matched-at":"test/mcs.mail.ru.txt","timestamp":"2022-12-17T23:24:53.119636+05:00","matcher-status":true,"matched-line":null}"""
     path = path.rstrip("/")
     files = glob.glob(path + "/**/*.txt", recursive=True)
     for rfile in files:
@@ -177,8 +175,21 @@ def check_responses(path, templates):
             continue
         for template in templates:
             tmr = template_match(template, res)
-            if tmr:
-                print(f"{rfile} {template['id']}")
+            if not tmr:
+                continue
+
+            res_obj = {
+                "template-id": template["id"],
+                "info": template["info"],
+                "matcher-name": None,
+                "type": "http",
+                "path": rfile,
+                "timestamp": datetime.now(timezone.utc).astimezone().isoformat(),
+                "matcher-status": True,
+                "matched-line": None
+            }
+
+            yield res_obj
     
 
 def cli():
@@ -186,15 +197,19 @@ def cli():
     a.add_argument("-u", type=str, help="directory to exclude (list)", required=True)
     a.add_argument("-t", "-templates", type=str, default=[], action='append', help="template directory to run (list)", required=True)
     a.add_argument("-et", "-exclude-templates", type=str, default=[], action='append', help="template or directory to exclude (list)")
+    a.add_argument('-json', action='store_true', help='passive nuclei checks')
     args = a.parse_args()
 
     templates = load_templates(args.t, args.et)
     
-    print (f"Templates loaded {len(templates)}")
+    print (f"Templates loaded {len(templates)}", file=sys.stderr)
 
-    check_responses("test", templates)
+    for res in check_responses(args.u, templates):
+        if args.json:
+            print(json.dumps(res))
+        else:
+            print(f"[{res['template-id']}] [{res['type']}] [{res['info']['severity']}] {res['path']}")
 
 
 if __name__ == "__main__":
     cli()
-
