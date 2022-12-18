@@ -193,6 +193,7 @@ def check_responses(path, templates):
                 "matcher-name": None,
                 "type": "http",
                 "path": rfile,
+                "matched-at": rfile,
                 "timestamp": datetime.now(timezone.utc).astimezone().isoformat(),
                 "matcher-status": True,
                 "matched-line": None
