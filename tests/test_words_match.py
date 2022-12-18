@@ -1,4 +1,4 @@
-from pypanuclei_rivalsec.pypanuclei import words_match, parse_response_bytes, regex_match
+from pypanuclei.pypanuclei import words_match, parse_response_bytes, regex_match
 
 def test_words_match():
     resb = b"""HTTP/1.1 200 OK\r

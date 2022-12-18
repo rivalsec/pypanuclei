@@ -1,4 +1,4 @@
-from src.pypanuclei_rivalsec.pypanuclei import parse_response_bytes, parse_response
+from pypanuclei.pypanuclei import parse_response_bytes, parse_response
 
 def test_parse():
     resb = b"""HTTP/1.1 200 OK\r

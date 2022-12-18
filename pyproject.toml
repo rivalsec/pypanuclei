@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pypanuclei_rivalsec"
+name = "pypanuclei"
 version = "0.0.5"
 authors = [
   { name="Vladimir Sopernikov" },
@@ -22,4 +22,4 @@ classifiers = [
 "Bug Tracker" = "https://github.com/rivalsec/pypanuclei/issues"
 
 [project.scripts]
-pypanuclei = "pypanuclei_rivalsec.pypanuclei:cli"
+pypanuclei = "pypanuclei.pypanuclei:cli"

@@ -1,5 +1,5 @@
 import yaml
-from src.pypanuclei_rivalsec.pypanuclei import template_match, parse_response_bytes
+from pypanuclei.pypanuclei import template_match, parse_response_bytes
 
 def test_matchers_and():
     resb = b"""HTTP/1.1 200 OK\r
