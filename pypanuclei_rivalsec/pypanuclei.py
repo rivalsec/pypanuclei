@@ -107,34 +107,42 @@ def get_part(response, part):
         return False
 
 
-def words_match(response, words, part, condition):
+def words_match(response, words, part, condition, negative = False):
     source = get_part(response, part)
     if source == False:
         return
     mi = (True if w in source else False for w in words)
+    if negative:
+        return not all(mi) if condition == "and" else not any(mi)
     return all(mi) if condition == "and" else any(mi)
 
 
-def regex_match_compiled(response, regexes, part, condition):
+def regex_match_compiled(response, regexes, part, condition, negative = False):
     """regexex - compiled"""
     source = get_part(response, part)
     if source == False:
         return
     ri = (True if r.search(source) else False for r in regexes)
+    if negative:
+        return not all(ri) if condition == "and" else not any(ri)
     return all(ri) if condition == "and" else any(ri)
 
 
-def regex_match(response, regexes, part, condition):
+def regex_match(response, regexes, part, condition, negative = False):
     """regexex - compiled"""
     source = get_part(response, part)
     if source == False:
         return
     ri = (True if re.search(r, source) else False for r in regexes)
+    if negative:
+        return not all(ri) if condition == "and" else not any(ri)
     return all(ri) if condition == "and" else any(ri)
 
 
-def status_match(response, statuses, condition):
+def status_match(response, statuses, condition, negative = False):
     mi = (True if s == response.status else False for s in statuses)
+    if negative:
+        return not all(mi) if condition == "and" else not any(mi)
     return all(mi) if condition == "and" else any(mi)
 
 
@@ -142,13 +150,14 @@ def matchers_match(matchers, response):
     for m in matchers:
         mpart = m.get("part", "body")
         mcondition = m.get("condition", "or")
+        mnegative = m.get("negative", False)
         if m["type"] not in ["word", "regex", "status"]:
             continue
         if m["type"] == "word":
-            yield words_match(response, m.get("words",[]), mpart, mcondition)
+            yield words_match(response, m.get("words",[]), mpart, mcondition, mnegative)
         elif m["type"] == "regex":
             # yield regex_match_compiled(response, m["regex_compiled"], mpart, mcondition)
-            yield regex_match(response, m["regex"], mpart, mcondition)
+            yield regex_match(response, m["regex"], mpart, mcondition, mnegative)
         elif m["type"] == "status":
             yield status_match(response, m["status"], mcondition) 
 
