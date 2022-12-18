@@ -203,7 +203,7 @@ def check_responses(path, templates):
 
 def cli():
     a = argparse.ArgumentParser()
-    a.add_argument("-u", type=str, help="directory to exclude (list)", required=True)
+    a.add_argument("-u", "-target", type=str, help="directory to exclude (list)", required=True)
     a.add_argument("-t", "-templates", type=str, default=[], action='append', help="template directory to run (list)", required=True)
     a.add_argument("-et", "-exclude-templates", type=str, default=[], action='append', help="template or directory to exclude (list)")
     a.add_argument('-json', action='store_true', help='passive nuclei checks')
