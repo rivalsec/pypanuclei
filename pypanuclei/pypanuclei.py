@@ -156,8 +156,8 @@ def matchers_match(matchers, response):
         if m["type"] == "word":
             yield words_match(response, m.get("words",[]), mpart, mcondition, mnegative)
         elif m["type"] == "regex":
-            # yield regex_match_compiled(response, m["regex_compiled"], mpart, mcondition)
-            yield regex_match(response, m["regex"], mpart, mcondition, mnegative)
+            yield regex_match_compiled(response, m["regex_compiled"], mpart, mcondition, mnegative)
+            #yield regex_match(response, m["regex"], mpart, mcondition, mnegative)
         elif m["type"] == "status":
             yield status_match(response, m["status"], mcondition) 
 
@@ -175,7 +175,7 @@ def template_match(temp, response):
         return all(matchers_match(matchers, response))
 
 
-def check_responses(path, templates):
+def check_responses(path, templates, debug=False):
     path = path.rstrip("/")
     files = glob.glob(path + "/**/*.txt", recursive=True)
     for rfile in files:
@@ -183,6 +183,8 @@ def check_responses(path, templates):
         if not res:
             continue
         for template in templates:
+            if debug:
+                print(f"debug: {rfile} - {template['id']}", file=sys.stderr)
             tmr = template_match(template, res)
             if not tmr:
                 continue
@@ -204,17 +206,18 @@ def check_responses(path, templates):
 
 def cli():
     a = argparse.ArgumentParser()
-    a.add_argument("-u", "-target", type=str, help="directory to exclude (list)", required=True)
-    a.add_argument("-t", "-templates", type=str, default=[], action='append', help="template directory to run (list)", required=True)
+    a.add_argument("-u", "-target", type=str, help="path to directory with saved responses", required=True)
+    a.add_argument("-t", "-templates", type=str, default=[], action='append', help="templates directory to run (list)", required=True)
     a.add_argument("-et", "-exclude-templates", type=str, default=[], action='append', help="template or directory to exclude (list)")
     a.add_argument('-json', action='store_true', help='json output')
+    a.add_argument('-debug', action='store_true', help='debug')
     args = a.parse_args()
 
     templates = load_templates(args.t, args.et)
     
     print (f"Templates loaded for scan: {len(templates)}", file=sys.stderr)
 
-    for res in check_responses(args.u, templates):
+    for res in check_responses(args.u, templates, args.debug):
         if args.json:
             print(json.dumps(res))
         else:
